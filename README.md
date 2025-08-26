@@ -120,3 +120,108 @@ Two files are required for both training and testing the models.
 | -------------------------------- | --------- |
 | MKKTRYTEEQIAFALKQAE              | 1         |
 | MTGICVGEVCRKMGISEAIFIIRREIRCSGRN | 2         |
+
+## Datasets Download
+
+The datasets used to train the models described in the article can be found in this [repository](https://github.com/CABGenOrg/deepmdc_data).
+Before running the training or testing, you need to:
+
+1. Download the datasets files.
+2. Unzip the contents.
+3. Place them in the **root folder** of the project.
+
+## Usage
+
+### Training
+
+To start training with the default parameters, simply run:
+
+```bash
+make run
+```
+
+You can also customize the training configuration by passing parameters directly. For example:
+
+* **Adjust the learning rate and the number of sequence embedding units:**
+
+```bash
+python3 cabgen_hopfield_main.py training.learning_rate=0.001 model.sequence_embedding.n_units=64
+```
+
+* **Combine multiple parameters to train several models at once**:
+
+```bash
+python3 cabgen_hopfield_main.py -m model.sequence_embedding.kernel_size=30,45 training.learning_rate=0.00005 training.n_updates=10000 training.evaluate_at=100,200,500 data_splitting.sample_n_sequences=0 +hydra.job.logging=debug hydra.verbose=true hydra/launcher=basic
+```
+
+### Testing
+
+The script `test_model.py` evaluates a trained model on new data.
+By default, it uses the settings defined in `config/test.yaml` and evaluates the most recent model stored in `/results`.
+To test a different model, adjust the parameter `test.model_path`.
+
+* **Evaluate the most recent model in** `/results`:
+
+```bash
+python3 test_model.py
+```
+
+* **Evaluate a specific model (e.g., with kernel size 48):**
+
+```bash
+python3 test_model.py test.model_path="results/model_2050125/checkpoint/model.zip" model.kernel_size=48
+```
+
+* **Change the test metadata file:**
+
+```bash
+python3 test_model.py test.metadata_file="new_metadata.tsv"
+```
+
+### 5 Fold Cross Validation
+
+The script fold_cross_validation.py performs 5-fold cross-validation to assess the stability of model metrics.
+It splits the dataset into 5 subsets and trains 5 models, each time varying the validation/test subset.
+You can also override any parameter directly from the command line, depending on the script’s available options.
+
+* **Run cross-validation with the default settings:**
+
+```bash
+python3 fold_cross_validation.py
+```
+
+* **Run cross-validation with a kernel size of 48 and 10,000 updates:**
+
+```bash
+python3 fold_cross_validation.py model.sequence_embedding.kernel_size=48 training.n_updates=10000
+```
+
+## Model Overview
+
+1. **Data splitting:**
+
+The function `make_dataloaders_stratified` splits the dataset into training, validation, and test sets.
+When the `stratify` option is enabled, it ensures balanced class distributions across splits.
+For example, if the class proportion is 50/50, each split will preserve that ratio (or as close as possible).
+
+2. **Model architecture:**
+
+The **DeepRC** model integrates three main components:
+
+* **Sequence Embedding:** Captures patterns in ORF sequences (using CNN or LSTM).
+* **Attention Network:** A modern Hopfield network that highlights the most relevant ORF regions.
+* **Output Network:** Classifies the samples into the target classes.
+
+3. **Training:**
+
+During training, the model adjusts its weights to minimize the loss function.
+
+4. **Evaluation:**
+
+The model is evaluated using the following metrics:
+
+* **ROC AUC**
+* **Balanced Accuracy (BACC)**
+* **F1-score**
+* **Matthews Correlation Coefficient (MCC)**
+* **Loss**
