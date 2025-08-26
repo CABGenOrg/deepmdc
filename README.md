@@ -206,7 +206,7 @@ For example, if the class proportion is 50/50, each split will preserve that rat
 
 2. **Model architecture:**
 
-The **DeepRC** model integrates three main components:
+The **DeepMDC** model integrates three main components:
 
 * **Sequence Embedding:** Captures patterns in ORF sequences (using CNN or LSTM).
 * **Attention Network:** A modern Hopfield network that highlights the most relevant ORF regions.
