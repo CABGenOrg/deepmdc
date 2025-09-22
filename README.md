@@ -44,64 +44,69 @@ Hydra configurations make it easy to manage training and testing parameters. Bel
 * **config.yaml**:
 Main configuration file, includes references to other config files and global parameters.
 
-  * **device**: Specifies the device to run the model on. Example: `"cuda:0"` to use GPU.
-  * **rnd_seed**: Sets the random seed for reproducibility.
-  * **results_directory**: Directory where training results will be saved. Default: `"results"`.
-  * **max_seq_len**: Maximum length of input sequences.
+  * **device**: Specifies the device to run the model on. Default: `"cuda:0"`.
+  * **rnd_seed**: Sets the random seed for reproducibility. Default: `0`.
+  * **create_orfs**: Creates TSV files from the JSONs present in the `jsons` directory (The user must create the `jsons` folder). Default: `False`.
+  * **request_for_permition_to_create_hdf5**: Asks for permission to create an HDF5 file from TSV files. Default: `False`.
+  * **results_directory**: The directory where training results will be saved. Default: `"results"`.
+  * **max_seq_len**: Maximum length of input sequences. Default: `5000`.
   * **database**: Contains paths to input files:
-    * **metadata_file**: TSV file with sample IDs and resistance profiles. Default: `"database/metadata.tsv"`.
-    * **repertoiresdata_path**: Directory containing ORF files. Default: `"database/orfs.hdf5"`.
+    * **metadata_file**: A TSV file with sample IDs and resistance profiles. Default: `"database/metadata.tsv"`.
+    * **genomesdata_path**: The directory containing ORF files. Default: `"database/orfs"`.
 
 * **data_splitting.yaml**:
 Configuration for data splitting.
 
-  * **stratify**: If true, performs stratified splitting to balance classes.
-  * **metadata_file_id_column**: Column name in metadata containing sample IDs.
-  * **sequence_column**: Column name containing ORF sequences in input files.
-  * **sequence_counts_column**: Column indicating how many times each ORF appears.
-  * **sample_n_sequences**: Number of sequences to sample per genome during training. Use 0 to load all sequences.
+  * **stratify**: If true, performs stratified splitting to balance classes. Default: `True`.
+  * **metadata_file_id_column**: Column name in metadata containing sample IDs. Default: `ID`.
+  * **sequence_column**: Column name containing ORF sequences in input files. Default: `orf`.
+  * **sequence_counts_column**: Column indicating how many times each ORF appears. Default: `templates`.
+  * **sample_n_sequences**: Number of sequences to sample per genome during training. Use 0 to load all sequences. Default: `10000`.
+  * **split_column_name**: The column to use for data splitting. The script will maintain the same proportion of this column's values in each fold. Default: `Real_MEM`.
 
 * **model.yaml**:
 Model architecture configuration.
 
   * **sequence_embedding**:
-    * **type**: Embedding layer type, e.g., CNN or LSTM.
-    * **n_layers**: Number of layers in sequence embedding.
-    * **kernel_size**: CNN kernel size (number of amino acids per filter).
-    * **n_units**: Number of neurons in embedding layer (number of kernels or LSTM blocks).
+    * **type**: Embedding layer type, e.g., CNN or LSTM. Default: `CNN`.
+    * **n_layers**: Number of layers in sequence embedding. Default: `1`.
+    * **kernel_size**: CNN kernel size (number of amino acids per filter). Default: `9`.
+    * **n_units**: Number of neurons in embedding layer (number of kernels or LSTM blocks). Default: `32`.
 
   * **attention**:
-    * **n_layers**: Number of layers in attention network.
-    * **n_units**: Number of neurons in attention network.
+    * **n_layers**: Number of layers in attention network.  Default: `2`.
+    * **n_units**: Number of neurons in attention network. Default: `32`.
 
   * **output**:
-    * **n_layers**: Number of layers in output network.
-    * **n_units**: Number of neurons in output network.
+    * **n_layers**: Number of layers in output network. Default: `1`.
+    * **n_units**: Number of neurons in output network. Default: `32`.
 
 * **task.yaml**:
 Task configuration.
 
   * **target**: Defines classification tasks:
 
-    * **type**: Task type, e.g., binary.
-    * **column_name**: Metadata column with task labels.
-    * **positive_class**: For binary tasks, defines the positive class.
-    * **pos_weight**: Weight applied to the positive class to handle imbalance.
-    * **task_weight**: Weight of this task in the total loss function (if multiple tasks).
+    * **type**: Task type. Default: `binary`.
+    * **column_name**: Metadata column with task labels. Default: `MEM`.
+    * **positive_class**: For binary tasks, defines the positive class. Default: `R`.
+    * **pos_weight**: Weight applied to the positive class to handle imbalance. Default: `1`.
+    * **task_weight**: Weight of this task in the total loss function (if multiple tasks). Default: `1`.
 
 * **training.yaml**:
 Training configuration.
 
-  * **n_updates**: Number of update steps during training.
-  * **evaluate_at**: Frequency (in steps) to evaluate the model on validation and training sets.
-  * **learning_rate**: Learning rate for the Adam optimizer.
+  * **n_updates**: Number of update steps during training. Default: `10000`.
+  * **evaluate_at**: Frequency (in steps) to evaluate the model on validation and training sets. Default: `100`.
+  * **learning_rate**: Learning rate for the Adam optimizer. Default: `0.0001`.
+  * **batch_size**: Number of genomes per minibatch during training. Default: `4`.
+  * **n_worker_processes**: Number of background processes to use for converting dataset to HDF5 container and trainingset dataloader. Default: `4`.
 
 * **test.yaml**:
 Model evaluation configuration.
 
   * **model_path**: Path to the trained model to be evaluated. Default: `"results"`.
-  * **metadata_file**: Path to test metadata file.
-  * **orfs_path**: Path to ORF files for the test set.
+  * **metadata_file**: Path to test metadata file. Default: `test/metadata.tsv`.
+  * **orfs_path**: Path to ORF files for the test set. Default: `test/orfs`.
 
 ## Input Format
 
