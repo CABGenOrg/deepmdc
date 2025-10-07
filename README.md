@@ -51,6 +51,7 @@ Main configuration file, includes references to other config files and global pa
   * **results_directory**: The directory where training results will be saved. Default: `"results"`.
   * **max_seq_len**: Maximum length of input sequences. Default: `5000`.
   * **database**: Contains paths to input files:
+    * **base_dir**: The base directory where the database and test folders are located.
     * **metadata_file**: A TSV file with sample IDs and resistance profiles. Default: `"database/metadata.tsv"`.
     * **genomesdata_path**: The directory containing ORF files. Default: `"database/orfs"`.
 
@@ -159,6 +160,18 @@ python3 cabgen_hopfield_main.py training.learning_rate=0.001 model.sequence_embe
 python3 cabgen_hopfield_main.py -m model.sequence_embedding.kernel_size=30,45 training.learning_rate=0.00005 training.n_updates=10000 training.evaluate_at=100,200,500 data_splitting.sample_n_sequences=0 +hydra.job.logging=debug hydra.verbose=true hydra/launcher=basic
 ```
 
+* **Skipping HDF5 container creation**
+
+During the execution of any script that accesses a database (cabgen_hopfield_main.py, fold_cross_validation.py, model_prediction.py, test_model.py), an HDF5 container is created by default, from which the training, testing, and validation dataloaders are built.
+
+If the file already exists, this step can be skipped by changing the genomesdata_path configuration corresponding to the script in question, replacing it with the address of the existing container (simply add .hdf5 to the default configuration).
+
+Example for running `cabgen_hopfield_main.py`:
+
+```bash
+python3 cabgen_hopfield_main.py database.genomesdata_path="database/orfs.hdf5"
+```
+
 ### Testing
 
 The script `test_model.py` evaluates a trained model on new data.
@@ -183,6 +196,24 @@ python3 test_model.py test.model_path="results/model_2050125/checkpoint/model.zi
 python3 test_model.py test.metadata_file="new_metadata.tsv"
 ```
 
+### Test Set Prediction
+
+The script `model_prediction.py`, by default, generates a table containing the prediction values of the most recent model stored in the `results/` folder, using the test data.
+
+If you wish to use a specific model, set the file path in the `test.model_path` parameter. In addition, other parameters can be adjusted as needed — simply check which ones are used by the script and override them directly in the command line.
+
+* Run prediction using the most recent model:
+
+```bash
+python3 model_prediction.py
+```
+
+* Run prediction using a specific model and set kernel_size to 48:
+
+```bash
+python3 model_prediction.py test.model_path="results/model_2050125/checkpoint/model.zip" model.sequence_embedding.kernel_size=48 
+```
+
 ### 5 Fold Cross Validation
 
 The script fold_cross_validation.py performs 5-fold cross-validation to assess the stability of model metrics.
@@ -199,6 +230,22 @@ python3 fold_cross_validation.py
 
 ```bash
 python3 fold_cross_validation.py model.sequence_embedding.kernel_size=48 training.n_updates=10000
+```
+
+### Attention Coefficients
+
+The scripts `extract_attention_weights.py` and `prediction_and_att_weights.py` extract the attention coefficients associated with each ORF in every sample. The former extracts all coefficients, resulting in very large tables, while the latter collects only the top 5 coefficients for each sample. It also displays the model’s prediction for the corresponding sample and whether the prediction is correct or not. The execution of either script follows the same parameters as the test script.
+
+* Run extraction using the most recent model:
+
+```bash
+python3 prediction_and_att_weights.py
+```
+
+* Run extraction using a specific model and set `kernel_size` to 48:
+
+```bash
+python3 prediction_and_att_weights.py test.model_path="results/model_2050125/checkpoint/model.zip" model.sequence_embedding.kernel_size=48 
 ```
 
 ## Model Overview
