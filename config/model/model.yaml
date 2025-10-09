@@ -1,0 +1,13 @@
+sequence_embedding:
+  type: "CNN"
+  n_layers: 1
+  # Only CNN
+  kernel_size: 9
+  # n kernels (CNN) | n lstm blocks (LSTM)
+  n_units: 32
+attention:
+  n_layers: 2
+  n_units: 32
+output:
+  n_layers: 1
+  n_units: 32

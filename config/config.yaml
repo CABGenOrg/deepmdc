@@ -1,0 +1,19 @@
+defaults:
+  - task: task
+  - data_splitting: data_splitting
+  - model: model
+  - training: training
+  - test: test
+  - _self_
+
+device: "cuda:0"
+rnd_seed: 0
+create_orfs: False
+request_for_permition_to_create_hdf5: False
+results_directory: "results"
+max_seq_len: 5000
+biologic_json_file: "all_ORFs.json.xz"
+database:
+  base_dir: "."
+  metadata_file: "database/metadata.tsv"
+  genomesdata_path: "database/orfs"

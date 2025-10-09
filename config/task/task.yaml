@@ -1,0 +1,6 @@
+target:
+  type: binary
+  column_name: "MEM"
+  positive_class: "R"
+  pos_weight: 1
+  task_weight: 1

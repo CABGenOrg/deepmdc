@@ -1,0 +1,23 @@
+# Folders
+*.venv
+*.mypy_cache
+*__pycache__
+*.pytest_cache
+*results
+*jsons
+*database
+*test
+*complete_tables
+*outputs
+*multirun
+*database_modified/
+# Files
+*.DS_Store
+*nohup.out
+*.hdf5
+*.hdf5info
+*.zip
+*.tar.*
+*mock_main.py
+*output.log
+*json
