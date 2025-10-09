@@ -68,7 +68,7 @@ def main(cfg: DictConfig):
     model_path = cfg.test.model_path
     metadata_file = path.abspath(cfg.test.metadata_file)
     genomesdata_path = path.abspath(cfg.test.genomesdata_path)
-    json_file = path.abspath(cfg.biologic_json_file)
+    json_file = path.abspath(cfg.biological_json_file)
 
     # Get the antibiotic name to use as the column name
     antibiotic_name = cfg.task['target']['column_name']

@@ -12,7 +12,7 @@ create_orfs: False
 request_for_permition_to_create_hdf5: False
 results_directory: "results"
 max_seq_len: 5000
-biologic_json_file: "all_ORFs.json.xz"
+biological_json_file: "all_ORFs.json.xz"
 database:
   base_dir: "."
   metadata_file: "database/metadata.tsv"
