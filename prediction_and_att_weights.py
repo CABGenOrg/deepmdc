@@ -13,7 +13,8 @@ from src.utils.handle_machine_learning import build_model
 from src.utils.handle_processing import make_dataloader
 
 
-def enrich_predictions_with_json(predictions_df: pd.DataFrame, json_data: dict) -> pd.DataFrame:
+def enrich_predictions_with_json(
+        predictions_df: pd.DataFrame, json_data: dict) -> pd.DataFrame:
     """
     Enriches the prediction DataFrame with product and db_xrefs information
     from a JSON data source.
@@ -21,12 +22,13 @@ def enrich_predictions_with_json(predictions_df: pd.DataFrame, json_data: dict) 
     print("Enriching prediction data with JSON info...")
     enriched_rows = []
 
-    for row in tqdm(predictions_df.itertuples(index=False), total=len(predictions_df), desc="Processing rows"):
+    for row in tqdm(predictions_df.itertuples(index=False),
+                    total=len(predictions_df), desc="Processing rows"):
         temp_dic = {
             "id": row.ID,
             "inference": row.inference,
             "prediction": row.prediction,
-            "label": row.label, 
+            "label": row.label,
             "match": row.match,
         }
 
@@ -34,13 +36,13 @@ def enrich_predictions_with_json(predictions_df: pd.DataFrame, json_data: dict) 
         for i in range(1, 6):
             seq_key = f"seq_{i}"
             weight_key = f"weight_{i}"
-            
+
             # Ensuring the columns exist in the original DataFrame
             if hasattr(row, seq_key) and hasattr(row, weight_key):
                 sequence = getattr(row, seq_key)
                 temp_dic[f"seq{i}"] = sequence
                 temp_dic[f"weight{i}"] = getattr(row, weight_key)
-                
+
                 # Retrieving the JSON data safely
                 json_entry = json_data.get(sequence, {})
                 temp_dic[f"product{i}"] = json_entry.get("product", "")
@@ -49,8 +51,9 @@ def enrich_predictions_with_json(predictions_df: pd.DataFrame, json_data: dict) 
         enriched_rows.append(temp_dic)
 
     enriched_df = pd.DataFrame(enriched_rows)
-    enriched_df.sort_values(by=["label", "match"], ascending=False, inplace=True)
-    
+    enriched_df.sort_values(by=["label", "match"],
+                            ascending=False, inplace=True)
+
     print("Data enrichment complete.")
     return enriched_df
 
@@ -159,7 +162,7 @@ def main(cfg: DictConfig):
 
     predictions_df = pd.DataFrame(all_predictions)
     print("Initial prediction table generated in memory.")
-    
+
     print(f"Loading ORF data from {json_file}...")
     json_data = read_compressed_json(json_file)
 

@@ -51,7 +51,7 @@ def predict_samples(cfg: DictConfig):
 
     # Prepare test data
     print("Preparing test data...")
-    is_present = check_database_presence("test")
+    is_present = check_database_presence("test", ".")
     if not is_present:
         raise FileNotFoundError("Database test folder/file not found!")
     task_definition = create_task_definition(cfg.task).to(device=device)

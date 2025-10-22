@@ -1,0 +1,2 @@
+input_table: "general_model.tsv"
+analysis_output_path: "analysis_output"

@@ -50,7 +50,7 @@ def test_model(cfg: DictConfig):
     model.eval()
 
     print("Preparing the test data...")
-    is_present = check_database_presence("test")
+    is_present = check_database_presence("test", ".")
     if not is_present:
         raise FileNotFoundError("Database test folder/file not found!")
 

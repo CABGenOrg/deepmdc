@@ -4,6 +4,7 @@ defaults:
   - model: model
   - training: training
   - test: test
+  - analysis: analysis
   - _self_
 
 device: "cuda:0"

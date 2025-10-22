@@ -10,8 +10,7 @@ from cabgen_hopfield_main import create_task_definition
 from src.utils.handle_files import get_most_recent_folder
 from widis_lstm_tools.utils.collection import SaverLoader
 from src.utils.handle_machine_learning import build_model
-from src.utils.handle_processing import make_dataloader, \
-    insert_datetime_into_filename
+from src.utils.handle_processing import make_dataloader
 
 
 @hydra.main(version_base=None, config_path="config", config_name="config")

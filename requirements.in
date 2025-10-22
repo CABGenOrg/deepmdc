@@ -1,5 +1,8 @@
 torch
 pandas
+numpy<2
+seaborn
+matplotlib
 h5py
 dill
 tqdm

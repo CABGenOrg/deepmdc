@@ -110,6 +110,12 @@ Model evaluation configuration.
   * **metadata_file**: Path to test metadata file. Default: `test/metadata.tsv`.
   * **orfs_path**: Path to ORF files for the test set. Default: `test/orfs`.
 
+* **analysis.yaml**:
+Configuration for data analysis.
+
+  * **input_table**: Path to the TSV file to be analyzed. Default: `general_model.tsv`.
+  * **analysis_output_path**: Folder to save the CSV and PNG files from analysis. Default: `analysis_output`.
+
 ## Input Format
 
 Two files are required for both training and testing the models.
@@ -130,7 +136,7 @@ Two files are required for both training and testing the models.
 
 ## Datasets Download
 
-The datasets used to train the models described in the article can be found in this [repository](https://github.com/CABGenOrg/deepmdc_data).
+The datasets used to train the models described in the article can be found in this [repository](https://github.com/CABGenOrg/deepmdc_mem_data).
 Before running the training or testing, you need to:
 
 1. Download the datasets files.
@@ -247,6 +253,24 @@ python3 prediction_and_att_weights.py
 
 ```bash
 python3 prediction_and_att_weights.py test.model_path="results/model_2050125/checkpoint/model.zip" model.sequence_embedding.kernel_size=48 biologic_json_file="my_ORFs.json.xz"
+```
+
+### Data Analysis
+
+The script `data_analysis.py` is responsible for generating tables and plots to explore the output TSV file produced by `prediction_and_att_weights.py`.
+
+You only need a TSV file in the correct [format](https://github.com/CABGenOrg/deepmdc_mem_data/blob/main/data/tables/general_model.tsv).
+
+* Run the default analysis:
+
+```bash
+python3 data_analysis.py
+```
+
+* Run the analysis with a custom table:
+
+```bash
+python3 data_analysis.py analysis.input_table="my_table.tsv"
 ```
 
 ## Model Overview

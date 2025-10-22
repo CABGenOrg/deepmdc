@@ -11,6 +11,7 @@
 *outputs
 *multirun
 *database_modified/
+*analysis_output
 # Files
 *.DS_Store
 *nohup.out

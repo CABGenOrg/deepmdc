@@ -69,7 +69,7 @@ def main(cfg: DictConfig):
     task_definition = create_task_definition(cfg.task).to(device=cfg.device)
 
     # Check if database is present
-    is_present = check_database_presence("train")
+    is_present = check_database_presence("train", ".")
     if not is_present:
         raise FileNotFoundError("Database folder/file not found!")
 
