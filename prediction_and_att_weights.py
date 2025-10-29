@@ -138,7 +138,7 @@ def main(cfg: DictConfig):
             attention_weights = torch.softmax(attention_logits, dim=0).t()
             attention_weights_list = attention_weights.tolist()[0]
 
-            prediction = "R" if probabilities[0] >= 0.5 else "S"
+            prediction = "R" if probabilities[0] > 0.5 else "S"
             classification = "R" if label.cpu().numpy().flatten() else "S"
             all_predictions.append(
                 {
