@@ -104,7 +104,7 @@ def plot_top_frequent_products(df_subset: pd.DataFrame, name: str,
     sns.boxplot(data=top_products_data, x='weight', y='product',
                 order=top_products_list, palette='Spectral', ax=ax)
     ax.set_title(f'Attention Coeff. Distribution for Top {num_products} '
-                 'Frequent Products for {name}')
+                 f'Frequent Products for {name}')
     ax.set_xlabel('Attention Coefficient (Weight)')
     ax.set_ylabel('Product')
     ax.grid(axis='x', linestyle='--', alpha=0.7)
