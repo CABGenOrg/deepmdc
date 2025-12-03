@@ -5,6 +5,13 @@ sequence_embedding:
   kernel_size: 9
   # n kernels (CNN) | n lstm blocks (LSTM)
   n_units: 32
+  # Enhanced CNN
+  kernel_sizes: [9, 24, 48, 64]
+  n_conv_blocks: 1
+  use_residual: False
+  use_squeeze_excitation: False
+  use_depthwise_separable: False
+  pooling_method: "max"
 attention:
   n_layers: 2
   n_units: 32

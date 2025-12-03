@@ -1,7 +1,8 @@
 import torch
 from omegaconf import DictConfig
 from deeprc.architectures import DeepRC, SequenceEmbeddingCNN, \
-    SequenceEmbeddingLSTM, AttentionNetwork, OutputNetwork
+    SequenceEmbeddingLSTM, SequenceEmbeddingCNNEnhanced, AttentionNetwork, \
+    OutputNetwork
 
 
 def build_model(cfg: DictConfig) -> DeepRC:
@@ -30,6 +31,21 @@ def build_model(cfg: DictConfig) -> DeepRC:
     sequence_embedding_n_units = cfg.model.sequence_embedding.n_units
     # Number of sequence embedding network
     sequence_embedding_layers = cfg.model.sequence_embedding.n_layers
+    # Sizes of convolutional kernels
+    kernel_sizes = cfg.model.sequence_embedding.kernel_sizes
+    # Number of convolutional blocks per scale
+    n_conv_blocks = cfg.model.sequence_embedding.n_conv_blocks
+    # Whether the information should be sent directly to the posterior layers
+    use_residual = cfg.model.sequence_embedding.use_residual
+    # Whether to find the most important kernel for each sequence
+    use_squeeze_excitation = \
+        cfg.model.sequence_embedding.use_squeeze_excitation
+    # Whether to use depthwise separable convolutions instead of standard
+    # convolutions
+    use_depthwise_separable = \
+        cfg.model.sequence_embedding.use_depthwise_separable
+    # Global pooling method
+    pooling_method = cfg.model.sequence_embedding.pooling_method
 
     # Attention mechanism configuration
 
@@ -75,15 +91,31 @@ def build_model(cfg: DictConfig) -> DeepRC:
             n_lstm_blocks=sequence_embedding_n_units,
             n_layers=sequence_embedding_layers
         )
+    elif sequence_embedding_type == "CNNEnhanced":
+        sequence_embedding_network = SequenceEmbeddingCNNEnhanced(
+            n_input_featues=20+3,
+            n_kernels=sequence_embedding_n_units,
+            kernel_sizes=kernel_sizes,
+            n_conv_blocks=n_conv_blocks,
+            use_residual=use_residual,
+            use_squeeze_excitation=use_squeeze_excitation,
+            use_depthwise_separable=use_depthwise_separable,
+            pooling_method=pooling_method
+        )
     else:
         raise ValueError("Invalid sequence embedding type: "
-                         f"{sequence_embedding_type}. Available only LSTM"
-                         " and CNN.")
+                         f"{sequence_embedding_type}. Available only CNN, LSTM"
+                         " and CNNEnhanced.")
+
+    embedding_features = sequence_embedding_network.output_dim \
+        if isinstance(sequence_embedding_network,
+                      SequenceEmbeddingCNNEnhanced) \
+        else sequence_embedding_n_units
 
     # Define the attention network for sequence feature aggregation
     attention_network = AttentionNetwork(
         # Output from Sequence embedding
-        n_input_features=sequence_embedding_n_units,
+        n_input_features=embedding_features,
         n_layers=attention_layers,
         n_units=attention_units,
     )
@@ -91,7 +123,7 @@ def build_model(cfg: DictConfig) -> DeepRC:
     # Define the output network responsible for final classification
     output_network = OutputNetwork(
         # Output from attention mechanism
-        n_input_features=sequence_embedding_n_units,
+        n_input_features=embedding_features,
         n_output_features=n_output_features,  # Number of classes
         n_layers=output_layers,
         n_units=output_units
