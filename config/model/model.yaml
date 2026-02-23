@@ -3,7 +3,7 @@ sequence_embedding:
   n_layers: 1
   # Only CNN
   kernel_size: 9
-  # n kernels (CNN) | n lstm blocks (LSTM)
+  # n kernels (CNN) | n lstm blocks (LSTM) | d model (Transformer)
   n_units: 32
   # Enhanced CNN
   kernel_sizes: [9, 24, 48, 64]
@@ -12,6 +12,9 @@ sequence_embedding:
   use_squeeze_excitation: False
   use_depthwise_separable: False
   pooling_method: "max"
+  # Transformer
+  n_heads: 4
+  dropout: 0.1
 attention:
   n_layers: 2
   n_units: 32

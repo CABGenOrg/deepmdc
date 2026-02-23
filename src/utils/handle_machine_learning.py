@@ -2,7 +2,7 @@ import torch
 from omegaconf import DictConfig
 from deeprc.architectures import DeepRC, SequenceEmbeddingCNN, \
     SequenceEmbeddingLSTM, SequenceEmbeddingCNNEnhanced, AttentionNetwork, \
-    OutputNetwork
+    OutputNetwork, SequenceEmbeddingTransformer
 
 
 def build_model(cfg: DictConfig) -> DeepRC:
@@ -46,6 +46,9 @@ def build_model(cfg: DictConfig) -> DeepRC:
         cfg.model.sequence_embedding.use_depthwise_separable
     # Global pooling method
     pooling_method = cfg.model.sequence_embedding.pooling_method
+    # Transformer config
+    n_heads = cfg.model.sequence_embedding.n_heads
+    dropout = cfg.model.sequence_embedding.dropout
 
     # Attention mechanism configuration
 
@@ -102,10 +105,18 @@ def build_model(cfg: DictConfig) -> DeepRC:
             use_depthwise_separable=use_depthwise_separable,
             pooling_method=pooling_method
         )
+    elif sequence_embedding_type == "Transformer":
+        sequence_embedding_network = SequenceEmbeddingTransformer(
+            n_input_features=20+3,
+            d_model=sequence_embedding_n_units,
+            n_heads=n_heads,
+            n_layers=sequence_embedding_layers,
+            dropout=dropout
+        )
     else:
         raise ValueError("Invalid sequence embedding type: "
                          f"{sequence_embedding_type}. Available only CNN, LSTM"
-                         " and CNNEnhanced.")
+                         " CNNEnhanced, and Transformer.")
 
     embedding_features = sequence_embedding_network.output_dim \
         if isinstance(sequence_embedding_network,
